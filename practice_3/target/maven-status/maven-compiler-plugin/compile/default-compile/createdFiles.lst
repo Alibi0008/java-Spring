@@ -1,0 +1,10 @@
+com\example\practice_3\notify\TelegramNotificationSender.class
+com\example\practice_3\notify\DeliveryNotifier.class
+com\example\practice_3\notify\EmailNotificationSender.class
+com\example\practice_3\delivery\DeliveryService.class
+com\example\practice_3\notify\NotificationSender.class
+com\example\practice_3\configuration\DeliveryProperties.class
+com\example\practice_3\configuration\InfrastructureConfig.class
+com\example\practice_3\Practice3Application.class
+com\example\practice_3\delivery\DeliveryQuote.class
+com\example\practice_3\web\DeliveryQuoteController.class

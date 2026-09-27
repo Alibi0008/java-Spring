@@ -1,0 +1,10 @@
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\configuration\DeliveryProperties.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\configuration\InfrastructureConfig.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\delivery\DeliveryQuote.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\delivery\DeliveryService.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\notify\DeliveryNotifier.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\notify\EmailNotificationSender.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\notify\NotificationSender.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\notify\TelegramNotificationSender.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\Practice3Application.java
+C:\Users\toleg\IdeaProjects\practice_3\src\main\java\com\example\practice_3\web\DeliveryQuoteController.java

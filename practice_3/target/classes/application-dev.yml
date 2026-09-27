@@ -1,0 +1,7 @@
+store:
+  delivery:
+    free-from: 10000
+    regions: [ALA, AST]
+  notify:
+    telegram:
+      enabled: true

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: practice_3
+
+store:
+  delivery:
+    free-from: 15000
+    regions: [ALA, AST, SHY]
+    sla-window: PT48H
+  notify:
+    telegram:
+      enabled: false

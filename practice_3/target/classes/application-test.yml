@@ -1,8 +1,0 @@
-store:
-  delivery:
-    free-from: 0
-    regions: [TEST, ALA]
-    sla-window: PT1H
-  notify:
-    telegram:
-      enabled: false

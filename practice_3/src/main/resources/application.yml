@@ -12,13 +12,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate        # схема создаётся через schema.sql, Hibernate только проверяет
+      ddl-auto: validate        # схема управляется через Flyway, Hibernate только валидирует
     show-sql: false
     open-in-view: false         # отключаем — LAZY загружаем явно через JOIN FETCH
 
-  sql:
-    init:
-      mode: always              # schema.sql и data.sql запускаются при каждом старте
+  flyway:
+    enabled: true
+    baseline-on-migrate: true   # поддержка существующей схемы БД
 
   data:
     web:

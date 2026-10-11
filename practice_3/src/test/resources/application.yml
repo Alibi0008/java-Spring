@@ -11,9 +11,8 @@ spring:
     show-sql: true
     open-in-view: false
 
-  sql:
-    init:
-      mode: never
+  flyway:
+    enabled: false
 
 store:
   delivery:

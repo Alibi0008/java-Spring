@@ -12,9 +12,8 @@ spring:
     show-sql: true
     open-in-view: false
 
-  sql:
-    init:
-      mode: never
+  flyway:
+    enabled: false              # для быстрых тестов с H2 create-drop миграции не нужны
 
 store:
   delivery:

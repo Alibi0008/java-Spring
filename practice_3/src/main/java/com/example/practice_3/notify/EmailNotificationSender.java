@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
+@Primary
 public class EmailNotificationSender implements NotificationSender {
 
     private static final Logger log = LoggerFactory.getLogger(EmailNotificationSender.class);

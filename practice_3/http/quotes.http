@@ -1,0 +1,53 @@
+### 1. Успешный расчёт (Бесплатная доставка, сумма >= 15000)
+POST http://localhost:8080/api/v1/quotes
+Content-Type: application/json
+
+{
+  "region": "ALA",
+  "amount": 25000
+}
+
+### 2. Успешный расчёт (Платная доставка, сумма < 15000)
+POST http://localhost:8080/api/v1/quotes
+Content-Type: application/json
+
+{
+  "region": "AST",
+  "amount": 5000
+}
+
+### 3. Ошибка валидации 400 (пустой region)
+POST http://localhost:8080/api/v1/quotes
+Content-Type: application/json
+
+{
+  "region": "",
+  "amount": 1000
+}
+
+### 4. Ошибка валидации 400 (отрицательная сумма)
+POST http://localhost:8080/api/v1/quotes
+Content-Type: application/json
+
+{
+  "region": "ALA",
+  "amount": -500
+}
+
+### 5. Ошибка 404 (необслуживаемый регион)
+POST http://localhost:8080/api/v1/quotes
+Content-Type: application/json
+
+{
+  "region": "Marsopolis",
+  "amount": 10000
+}
+
+### 6. Получить всю историю расчётов (Пагинация: страница 0, размер 10)
+GET http://localhost:8080/api/v1/quotes?page=0&size=10
+
+### 7. История с фильтром по региону (только ALA)
+GET http://localhost:8080/api/v1/quotes?region=ALA&page=0&size=10
+
+### 8. История с сортировкой по сумме заказа от большей к меньшей (orderAmount,desc)
+GET http://localhost:8080/api/v1/quotes?sort=orderAmount,desc&page=0&size=10

@@ -2,13 +2,19 @@ package com.example.practice_3.web;
 
 import com.example.practice_3.delivery.DeliveryQuote;
 import com.example.practice_3.delivery.DeliveryService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.practice_3.web.dto.QuoteRecordDto;
+import com.example.practice_3.web.dto.QuoteRequest;
+import com.example.practice_3.web.dto.QuoteResponse;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/delivery")
+@RequestMapping("/api/v1/quotes")
 public class DeliveryQuoteController {
 
     private final DeliveryService deliveryService;
@@ -17,11 +23,27 @@ public class DeliveryQuoteController {
         this.deliveryService = deliveryService;
     }
 
-    @GetMapping("/quote")
-    public DeliveryQuote quote(
-            @RequestParam String region,
-            @RequestParam long amount
+    /**
+     * POST /api/v1/quotes
+     * Рассчитать стоимость доставки и сохранить в историю.
+     */
+    @PostMapping
+    public ResponseEntity<QuoteResponse> quote(
+            @Valid @RequestBody QuoteRequest req
     ) {
-        return deliveryService.quote(region, amount);
+        DeliveryQuote quote = deliveryService.quote(req.region(), req.amount());
+        return ResponseEntity.ok(QuoteResponse.from(quote));
+    }
+
+    /**
+     * GET /api/v1/quotes?region=ALA&page=0&size=20&sort=quotedAt,desc
+     * История расчётов с пагинацией и сортировкой.
+     */
+    @GetMapping
+    public Page<QuoteRecordDto> list(
+            @RequestParam(required = false) String region,
+            @PageableDefault(size = 20, sort = "quotedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return deliveryService.listQuotes(region, pageable);
     }
 }

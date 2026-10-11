@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    open-in-view: false
+
+  sql:
+    init:
+      mode: never
+
+store:
+  delivery:
+    free-from: 15000
+    regions: [ALA, AST, SHY]
+    sla-window: PT48H
+  notify:
+    telegram:
+      enabled: false

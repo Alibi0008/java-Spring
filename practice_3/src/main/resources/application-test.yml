@@ -1,3 +1,21 @@
+spring:
+  datasource:
+    # H2 in-memory с режимом совместимости PostgreSQL — для изолированных тестов
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop     # Hibernate создаёт схему сам и удаляет после тестов
+    show-sql: true
+    open-in-view: false
+
+  sql:
+    init:
+      mode: never
+
 store:
   delivery:
     free-from: 0

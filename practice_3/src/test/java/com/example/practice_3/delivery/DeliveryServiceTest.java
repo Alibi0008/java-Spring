@@ -1,6 +1,14 @@
 package com.example.practice_3.delivery;
 
 import com.example.practice_3.configuration.DeliveryProperties;
+import com.example.practice_3.delivery.app.DeliveryService;
+import com.example.practice_3.delivery.domain.DeliveryPolicy;
+import com.example.practice_3.delivery.domain.DeliveryQuote;
+import com.example.practice_3.delivery.domain.UnservedRegionException;
+import com.example.practice_3.delivery.infra.QuoteEntityMapper;
+import com.example.practice_3.delivery.infra.QuoteRecordRepository;
+import com.example.practice_3.delivery.infra.Region;
+import com.example.practice_3.delivery.infra.RegionRepository;
 import com.example.practice_3.notify.DeliveryNotifier;
 import com.example.practice_3.notify.NotificationSender;
 import org.junit.jupiter.api.Test;
@@ -25,13 +33,16 @@ import static org.mockito.Mockito.when;
 class DeliveryServiceTest {
 
     private final Clock clock = Clock.fixed(Instant.parse("2026-09-21T04:00:00Z"), ZoneOffset.UTC);
+    private final DeliveryPolicy deliveryPolicy = new DeliveryPolicy();
 
-    // Мокаем репозитории — тест без БД, только бизнес-логика
     @Mock
     private RegionRepository regionRepository;
 
     @Mock
     private QuoteRecordRepository quoteRepository;
+
+    @Mock
+    private QuoteEntityMapper quoteEntityMapper;
 
     @Test
     void notifiesEveryChannelAndMarksFreeDelivery() {
@@ -44,12 +55,11 @@ class DeliveryServiceTest {
         var notifier    = new DeliveryNotifier(List.of(fake));
         var properties  = new DeliveryProperties(15_000, List.of("ALA", "AST"), Duration.ofHours(48));
 
-        // Говорим моку: findByCode("ALA") → вернуть регион
         Region fakeRegion = Region.builder().id(1L).code("ALA").name("Almaty").build();
         when(regionRepository.findByCode("ALA")).thenReturn(Optional.of(fakeRegion));
         when(quoteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        var service = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository);
+        var service = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy);
 
         DeliveryQuote quote = service.quote("ALA", 20_000);
 
@@ -63,10 +73,20 @@ class DeliveryServiceTest {
     void rejectsUnknownRegion() {
         var notifier   = new DeliveryNotifier(List.of());
         var properties = new DeliveryProperties(15_000, List.of("ALA"), Duration.ofHours(48));
-        var service    = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository);
+        var service    = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy);
 
         assertThatThrownBy(() -> service.quote("SHY", 1))
                 .isInstanceOf(UnservedRegionException.class)
                 .hasMessageContaining("SHY");
+    }
+
+    @Test
+    void rejectsNonPositiveAmount() {
+        var notifier   = new DeliveryNotifier(List.of());
+        var properties = new DeliveryProperties(15_000, List.of("ALA"), Duration.ofHours(48));
+        var service    = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy);
+
+        assertThatThrownBy(() -> service.quote("ALA", 0))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

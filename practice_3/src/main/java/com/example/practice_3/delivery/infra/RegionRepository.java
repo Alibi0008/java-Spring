@@ -1,4 +1,4 @@
-package com.example.practice_3.delivery;
+package com.example.practice_3.delivery.infra;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,10 +1,10 @@
-package com.example.practice_3.delivery;
+package com.example.practice_3.delivery.web.dto;
 
-import java.time.Instant;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
-public record DeliveryQuote(
+public record QuoteResponse(
         String region,
         long orderAmount,
         boolean freeDelivery,

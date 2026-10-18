@@ -1,10 +1,10 @@
-package com.example.practice_3.web;
+package com.example.practice_3.delivery.web;
 
-import com.example.practice_3.delivery.DeliveryQuote;
-import com.example.practice_3.delivery.DeliveryService;
-import com.example.practice_3.web.dto.QuoteRecordDto;
-import com.example.practice_3.web.dto.QuoteRequest;
-import com.example.practice_3.web.dto.QuoteResponse;
+import com.example.practice_3.delivery.app.DeliveryService;
+import com.example.practice_3.delivery.domain.DeliveryQuote;
+import com.example.practice_3.delivery.web.dto.QuoteRecordDto;
+import com.example.practice_3.delivery.web.dto.QuoteRequest;
+import com.example.practice_3.delivery.web.dto.QuoteResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryQuoteController {
 
     private final DeliveryService deliveryService;
+    private final QuoteApiMapper quoteApiMapper;
 
-    public DeliveryQuoteController(DeliveryService deliveryService) {
+    public DeliveryQuoteController(DeliveryService deliveryService, QuoteApiMapper quoteApiMapper) {
         this.deliveryService = deliveryService;
+        this.quoteApiMapper = quoteApiMapper;
     }
 
     /**
@@ -32,7 +34,7 @@ public class DeliveryQuoteController {
             @Valid @RequestBody QuoteRequest req
     ) {
         DeliveryQuote quote = deliveryService.quote(req.region(), req.amount());
-        return ResponseEntity.ok(QuoteResponse.from(quote));
+        return ResponseEntity.ok(quoteApiMapper.toResponse(quote));
     }
 
     /**

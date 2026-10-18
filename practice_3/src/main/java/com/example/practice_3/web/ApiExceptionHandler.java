@@ -1,6 +1,6 @@
 package com.example.practice_3.web;
 
-import com.example.practice_3.delivery.UnservedRegionException;
+import com.example.practice_3.delivery.domain.UnservedRegionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;

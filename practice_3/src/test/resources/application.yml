@@ -14,6 +14,12 @@ spring:
   flyway:
     enabled: false
 
+  cache:
+    type: caffeine
+    cache-names: quotes, regions
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=10m
+
 store:
   delivery:
     free-from: 15000

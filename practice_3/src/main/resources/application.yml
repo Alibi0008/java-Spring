@@ -20,6 +20,12 @@ spring:
     enabled: true
     baseline-on-migrate: true   # поддержка существующей схемы БД
 
+  cache:
+    type: caffeine
+    cache-names: quotes, regions
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=10m
+
   data:
     web:
       pageable:

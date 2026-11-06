@@ -11,6 +11,8 @@ import com.example.practice_3.delivery.infra.Region;
 import com.example.practice_3.delivery.infra.RegionRepository;
 import com.example.practice_3.delivery.web.dto.QuoteRecordDto;
 import com.example.practice_3.notify.DeliveryNotifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,7 +56,9 @@ public class DeliveryService {
 
     /**
      * Рассчитывает стоимость доставки и сохраняет запись в БД.
+     * При создании новой записи сбрасывает кэш расчётов.
      */
+    @CacheEvict(value = "quotes", allEntries = true)
     public DeliveryQuote quote(String region, long orderAmount) {
         deliveryPolicy.validateOrderAmount(orderAmount);
 
@@ -86,9 +90,11 @@ public class DeliveryService {
     /**
      * Возвращает историю расчётов постранично.
      * readOnly=true — без dirty check.
+     * Результат кэшируется по ключу параметров пагинации и региона.
      * Маппинг в DTO выполняется через MapStruct внутри транзакции.
      */
     @Transactional(readOnly = true)
+    @Cacheable(value = "quotes", key = "{#regionCode, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
     public Page<QuoteRecordDto> listQuotes(String regionCode, Pageable pageable) {
         Page<QuoteRecord> page;
         if (regionCode != null && !regionCode.isBlank()) {

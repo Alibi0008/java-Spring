@@ -28,3 +28,9 @@ store:
   notify:
     telegram:
       enabled: false
+
+services:
+  tariff:
+    base-url: http://localhost:8089
+    connect-timeout: 1s
+    read-timeout: 2s

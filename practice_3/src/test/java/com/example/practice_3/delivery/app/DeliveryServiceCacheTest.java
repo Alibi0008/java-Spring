@@ -47,6 +47,9 @@ class DeliveryServiceCacheTest {
     @MockitoBean
     private RegionRepository regionRepository;
 
+    @MockitoBean
+    private com.example.practice_3.delivery.infra.tariff.TariffClient tariffClient;
+
     @BeforeEach
     void clearCache() {
         var cache = cacheManager.getCache("quotes");

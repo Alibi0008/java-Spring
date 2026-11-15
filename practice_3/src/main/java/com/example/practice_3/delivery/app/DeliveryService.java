@@ -37,6 +37,7 @@ public class DeliveryService {
     private final QuoteRecordRepository quoteRepository;
     private final QuoteEntityMapper quoteEntityMapper;
     private final DeliveryPolicy deliveryPolicy;
+    private final com.example.practice_3.delivery.infra.tariff.TariffGateway tariffGateway;
 
     public DeliveryService(DeliveryProperties properties,
                            DeliveryNotifier notifier,
@@ -44,7 +45,8 @@ public class DeliveryService {
                            RegionRepository regionRepository,
                            QuoteRecordRepository quoteRepository,
                            QuoteEntityMapper quoteEntityMapper,
-                           DeliveryPolicy deliveryPolicy) {
+                           DeliveryPolicy deliveryPolicy,
+                           com.example.practice_3.delivery.infra.tariff.TariffGateway tariffGateway) {
         this.properties = properties;
         this.notifier = notifier;
         this.clock = clock;
@@ -52,6 +54,7 @@ public class DeliveryService {
         this.quoteRepository = quoteRepository;
         this.quoteEntityMapper = quoteEntityMapper;
         this.deliveryPolicy = deliveryPolicy;
+        this.tariffGateway = tariffGateway;
     }
 
     /**
@@ -67,9 +70,11 @@ public class DeliveryService {
         }
 
         boolean freeDelivery = deliveryPolicy.isEligibleForFreeDelivery(orderAmount, properties.freeFrom());
+        double tariffMultiplier = tariffGateway.getMultiplier(region);
         Instant quotedAt = Instant.now(clock);
         List<String> notifiedVia = notifier.notifyAll(
-                "Quote for %s amount=%d free=%s at %s".formatted(region, orderAmount, freeDelivery, quotedAt)
+                "Quote for %s amount=%d (multiplier=%.2f) free=%s at %s".formatted(
+                        region, orderAmount, tariffMultiplier, freeDelivery, quotedAt)
         );
 
         Region regionEntity = regionRepository.findByCode(region)

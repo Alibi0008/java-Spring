@@ -65,4 +65,18 @@ public class DeliveryQuoteController {
     ) {
         return deliveryService.listQuotes(region, pageable);
     }
+
+    /**
+     * DELETE /api/v1/quotes/{id}
+     * Удалить запись котировки из истории (только для роли ADMIN).
+     */
+    @Operation(summary = "Удалить котировку по ID (только для роли ADMIN)")
+    @ApiResponse(responseCode = "204", description = "Котировка успешно удалена")
+    @ApiResponse(responseCode = "401", description = "Требуется авторизация")
+    @ApiResponse(responseCode = "403", description = "Доступ запрещен (недостаточно прав)")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteQuote(@PathVariable Long id) {
+        deliveryService.deleteQuote(id);
+        return ResponseEntity.noContent().build();
+    }
 }

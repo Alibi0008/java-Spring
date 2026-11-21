@@ -109,4 +109,9 @@ public class DeliveryService {
         }
         return page.map(quoteEntityMapper::toDto);
     }
+
+    @CacheEvict(value = "quotes", allEntries = true)
+    public void deleteQuote(Long id) {
+        quoteRepository.deleteById(id);
+    }
 }

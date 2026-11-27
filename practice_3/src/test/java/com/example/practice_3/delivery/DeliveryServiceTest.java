@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -47,6 +48,9 @@ class DeliveryServiceTest {
     @Mock
     private com.example.practice_3.delivery.infra.tariff.TariffGateway tariffGateway;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     @Test
     void notifiesEveryChannelAndMarksFreeDelivery() {
         var sent = new ArrayList<String>();
@@ -63,7 +67,7 @@ class DeliveryServiceTest {
         when(quoteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(tariffGateway.getMultiplier("ALA")).thenReturn(1.0);
 
-        var service = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy, tariffGateway);
+        var service = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy, tariffGateway, eventPublisher);
 
         DeliveryQuote quote = service.quote("ALA", 20_000);
 
@@ -77,7 +81,7 @@ class DeliveryServiceTest {
     void rejectsUnknownRegion() {
         var notifier   = new DeliveryNotifier(List.of());
         var properties = new DeliveryProperties(15_000, List.of("ALA"), Duration.ofHours(48));
-        var service    = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy, tariffGateway);
+        var service    = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy, tariffGateway, eventPublisher);
 
         assertThatThrownBy(() -> service.quote("SHY", 1))
                 .isInstanceOf(UnservedRegionException.class)
@@ -88,7 +92,7 @@ class DeliveryServiceTest {
     void rejectsNonPositiveAmount() {
         var notifier   = new DeliveryNotifier(List.of());
         var properties = new DeliveryProperties(15_000, List.of("ALA"), Duration.ofHours(48));
-        var service    = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy, tariffGateway);
+        var service    = new DeliveryService(properties, notifier, clock, regionRepository, quoteRepository, quoteEntityMapper, deliveryPolicy, tariffGateway, eventPublisher);
 
         assertThatThrownBy(() -> service.quote("ALA", 0))
                 .isInstanceOf(IllegalArgumentException.class);

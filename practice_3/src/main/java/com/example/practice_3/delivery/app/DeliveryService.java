@@ -4,6 +4,7 @@ import com.example.practice_3.configuration.DeliveryProperties;
 import com.example.practice_3.delivery.domain.DeliveryPolicy;
 import com.example.practice_3.delivery.domain.DeliveryQuote;
 import com.example.practice_3.delivery.domain.UnservedRegionException;
+import com.example.practice_3.delivery.events.QuoteCalculatedEvent;
 import com.example.practice_3.delivery.infra.QuoteEntityMapper;
 import com.example.practice_3.delivery.infra.QuoteRecord;
 import com.example.practice_3.delivery.infra.QuoteRecordRepository;
@@ -13,6 +14,7 @@ import com.example.practice_3.delivery.web.dto.QuoteRecordDto;
 import com.example.practice_3.notify.DeliveryNotifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class DeliveryService {
     private final QuoteEntityMapper quoteEntityMapper;
     private final DeliveryPolicy deliveryPolicy;
     private final com.example.practice_3.delivery.infra.tariff.TariffGateway tariffGateway;
+    private final ApplicationEventPublisher eventPublisher;
 
     public DeliveryService(DeliveryProperties properties,
                            DeliveryNotifier notifier,
@@ -46,7 +49,8 @@ public class DeliveryService {
                            QuoteRecordRepository quoteRepository,
                            QuoteEntityMapper quoteEntityMapper,
                            DeliveryPolicy deliveryPolicy,
-                           com.example.practice_3.delivery.infra.tariff.TariffGateway tariffGateway) {
+                           com.example.practice_3.delivery.infra.tariff.TariffGateway tariffGateway,
+                           ApplicationEventPublisher eventPublisher) {
         this.properties = properties;
         this.notifier = notifier;
         this.clock = clock;
@@ -55,6 +59,7 @@ public class DeliveryService {
         this.quoteEntityMapper = quoteEntityMapper;
         this.deliveryPolicy = deliveryPolicy;
         this.tariffGateway = tariffGateway;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -80,13 +85,17 @@ public class DeliveryService {
         Region regionEntity = regionRepository.findByCode(region)
                 .orElseThrow(() -> new UnservedRegionException("Region not found in DB: " + region));
 
-        quoteRepository.save(QuoteRecord.builder()
+        QuoteRecord saved = quoteRepository.save(QuoteRecord.builder()
                 .region(regionEntity)
                 .orderAmount(orderAmount)
                 .freeDelivery(freeDelivery)
                 .quotedAt(quotedAt)
                 .slaHours((int) properties.slaWindow().toHours())
                 .build());
+
+        eventPublisher.publishEvent(QuoteCalculatedEvent.of(
+                saved.getId(), region, orderAmount, freeDelivery, quotedAt
+        ));
 
         return new DeliveryQuote(region, orderAmount, freeDelivery,
                 properties.slaWindow(), quotedAt, notifiedVia);

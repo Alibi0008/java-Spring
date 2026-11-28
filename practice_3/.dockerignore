@@ -1,0 +1,8 @@
+.git
+target/
+.idea/
+*.iml
+.env
+compose.override.yaml
+README.md
+HELP.md
